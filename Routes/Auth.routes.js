@@ -3,6 +3,7 @@ const router = express.Router();
 const createError = require("http-errors");
 const User = require("../Models/Users.model");
 const { userSchema } = require("../helpers/validators");
+const { signAccessToken } = require("../helpers/jwt.helpers.js");
 
 // **************************************************************************
 
@@ -27,8 +28,10 @@ router.post("/register", async (req, res, next) => {
     // if the email did not exist, create and save a new user
     const user = new User({ email: result.email, password: result.password });
     const saveUser = await user.save();
+    // create a token for the user
+    const accessToken = await signAccessToken(saveUser.id);
     //send response if succesful registration is done
-    res.send(`${saveUser}, registration successful`);
+    res.send(accessToken);
   } catch (error) {
     console.log("there is an error");
     console.log(error.isJOI); //not working

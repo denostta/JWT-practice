@@ -4,11 +4,13 @@ const createError = require("http-errors");
 module.exports = {
   signAccessToken: (userId) => {
     return new Promise((resolve, reject) => {
-      const payload = {
-        name: "John Doe",
-      };
+      const payload = {};
       const secret = "exampleSecretKey";
-      const options = {};
+      const options = {
+        expiresIn: "1hr",
+        issuer: "tonyden@gmail.com",
+        audience: userId,
+      };
 
       JWT.sign(payload, secret, options, (err, token) => {
         if (err) reject(err);

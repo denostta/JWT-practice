@@ -31,7 +31,7 @@ router.post("/register", async (req, res, next) => {
     // create a token for the user
     const accessToken = await signAccessToken(saveUser.id);
     //send response if succesful registration is done
-    res.send(accessToken);
+    res.send({ accessToken });
   } catch (error) {
     console.log("there is an error");
     console.log(error.isJOI); //not working

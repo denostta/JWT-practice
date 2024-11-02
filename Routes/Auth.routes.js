@@ -32,9 +32,10 @@ router.post("/register", async (req, res, next) => {
     const accessToken = await signAccessToken(saveUser.id);
     //send response if succesful registration is done
     res.send({ accessToken });
+    // catch the error is there's any
   } catch (error) {
     console.log("there is an error");
-    console.log(error.isJOI); //not working
+    console.log(error.isJoi); //not working
 
     if (error) error.status = 422;
     next(error);
@@ -44,7 +45,33 @@ router.post("/register", async (req, res, next) => {
 // **************************************************************************
 //LOGIN ROUTE
 router.post("/login", async (req, res, next) => {
-  res.send("login route");
+  try {
+    // request the data submitted by the user and validate using userSchema
+    const result = await userSchema.validateAsync(req.body);
+    // find the user in the database
+    const user = await User.findOne({ email: result.email });
+    // if the user does not exist, throw an error
+    if (!user) {
+      throw createError.NotFound("User is not registered");
+    }
+    // if the user exists, compare the password
+    const isMatch = await user.isValidPassword(result.password);
+    // if the password is not correct, throw an error
+    if (!isMatch) {
+      throw createError.Unauthorized("Username/Password not valid");
+    }
+    // if the password is correct, create a token
+    const accessToken = await signAccessToken(user.id);
+    console.log(result);
+    res.send({ accessToken });
+  } catch (error) {
+    // if the error is from Joi
+    if (error.isJoi === true)
+      return next(createError.BadRequest("Invalid Username/Password"));
+
+    //if there is an error send post request from the client fwd the error to error midddleware
+    next(error);
+  }
 });
 
 // **************************************************************************

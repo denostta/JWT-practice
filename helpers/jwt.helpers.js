@@ -5,10 +5,10 @@ module.exports = {
   signAccessToken: (userId) => {
     return new Promise((resolve, reject) => {
       const payload = {};
-      const secret = "exampleSecretKey";
+      const secret = "process.env.ACCESS_TOKEN_SECRET";
       const options = {
         expiresIn: "1hr",
-        issuer: "tonyden@gmail.com",
+        issuer: "tony@gmail.com",
         audience: userId,
       };
 
